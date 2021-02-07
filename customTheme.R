@@ -10,7 +10,7 @@ custom_theme <-
     legend.key = element_rect(fill = "#272B30", size = 0),
 
     panel.grid = element_line(colour = "#8B9BA8"),
-    panel.background = element_rect(fill = "#272B30", size = 0),
+    panel.background = element_rect(fill = "#3c4044", size = 0),
     panel.border = element_blank(),
 
     plot.background = element_rect(fill = "#272B30", size = 0),
@@ -22,7 +22,7 @@ custom_theme <-
     strip.text = element_text(color = "#8B9BA8", face = "bold"),
 
     text = element_text(family = "FranklinGothic-Book",
-                        angle = 55)
+                        angle = 0)
   )
 
 text_color <- "#8B9BA8" # bluish grey
