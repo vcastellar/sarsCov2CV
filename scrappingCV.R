@@ -1,5 +1,6 @@
 library(rvest)
 library(dplyr)
+library(zoo)
 
 urls <- c("https://dadesobertes.gva.es/dataset/covid-19-dades-de-casos-i-persones-mortes-per-grup-edat-i-sexe-acumulades-des-del-31-01-2020",
           "https://dadesobertes.gva.es/va/dataset/covid19-casos-i-persones-mortes-per-grup-edat-i-sexe-2020")
@@ -153,8 +154,24 @@ url <- urls[2]
   }
   
 
-
+# tratamiento de datos. 
+#------------------------------------------------------------------------------
+#   - Se normalizan los valores de Edad y Sexo
+#   - Se calculan variaciones diarias de casos y defunciones
+#   - Se calcula la incidencia acumulada a 7 y 14 días para casos y defunciones
 datos <- read.csv("datos.csv")
-datos <- datos %>% arrange(fecha)
+datos <- datos %>% arrange(fecha, Sexo, GrupoEdad) %>% 
+  mutate(GrupoEdad = gsub("g90.*", "g90 o mas", GrupoEdad),
+         Sexo = gsub("^.*Mujer.*$", "Mujer", Sexo),
+         Sexo = gsub("^.*Hombre.*$", "Hombre", Sexo)) %>% 
+  group_by(Sexo, GrupoEdad) %>% 
+  mutate(CasosDia = c(0, diff(CasosAcum)),
+         DefDia   = c(0, diff(DefAcum)),
+         Casos_14d = rollapplyr(CasosDia, width = 14, FUN = sum, fill = 0),
+         Def_14d = rollapplyr(CasosDia, width = 14, FUN = sum, fill = 0),
+         Casos_7d = rollapplyr(CasosDia, width = 7, FUN = sum, fill = 0),
+         Def_7d = rollapplyr(CasosDia, width = 7, FUN = sum, fill = 0),
+         PoblacionCV = 5003769)
+
 
 write.csv(datos, "datos.csv", row.names = FALSE)
