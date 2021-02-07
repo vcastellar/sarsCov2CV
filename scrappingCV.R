@@ -39,7 +39,13 @@ url <- urls[1]
           html_attr("href") 
         linkFichero <- linkFichero[grepl("download", linkFichero)][1]
         
-        datosDia <- read.csv2(linkFichero, skip = 1)
+        cabecera <- readLines(linkFichero, n = 1)
+        if (grepl("Grup d'edat", cabecera)) {
+          skip <- 0
+        } else {
+          skip <- 1
+        }
+        datosDia <- read.csv2(linkFichero, skip = skip)
         
         
         datosDia$fecha <- fecha
@@ -87,7 +93,13 @@ url <- urls[2]
           html_attr("href") 
         linkFichero <- linkFichero[grepl("download", linkFichero)][1]
         
-        datosDia <- read.csv2(linkFichero)
+        cabecera <- readLines(linkFichero, n = 1)
+        if (grepl("Grup d'edat|Grupo de edad", cabecera)) {
+          skip <- 0
+        } else {
+          skip <- 1
+        }
+        datosDia <- read.csv2(linkFichero, skip = skip)
         
         
         datosDia$fecha <- fecha
@@ -137,7 +149,13 @@ url <- urls[2]
           html_attr("href") 
         linkFichero <- linkFichero[grepl("download", linkFichero)][1]
         
-        datosDia <- read.csv2(linkFichero)
+        cabecera <- readLines(linkFichero, n = 1)
+        if (grepl("Grup d'edat|Grupo de edad", cabecera)) {
+          skip <- 0
+        } else {
+          skip <- 1
+        }
+        datosDia <- read.csv2(linkFichero, skip = skip)
         
         
         datosDia$fecha <- fecha
