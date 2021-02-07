@@ -10,9 +10,7 @@ En el directorio **datos** tenemos los siguientes ficheros:
 + **datos.csv** con los siguientes campos:
   + **GrupoEdad**: grupo de edad de las observaciones
   + **Sexo**: Variable sexo: *Hombre*, o *Mujer*
-  + **PorcCasos**: Porcentaje de casos acumulados en la fecha y grupo de Edad-Sexo correspondiente sobre el total
   + **CasosAcum**: Casos positivos acumulados en la fecha y grupo de Edad-Sexo correspondiente
-  + **PorcDefun**: Porcentaje de defunciones acumuladas en la fecha y grupo de Edad-Sexo correspondiente sobre el total
   + **DefAcum**: Casos de fallecidos acumulados en la fecha y grupo de Edad-Sexo correspondiente
   + **fecha**: fecha de la información en formato "yyyy-mm-dd"
   + **CasosDia**: Casos nuevos notificados en la fecha y grupo de Edad-Sexo correspondiente. Se calcula como la diferencia entre el valor de la observación vigente y el valor de la observación conocida inmediatamente anterior.
