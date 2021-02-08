@@ -7,7 +7,7 @@ library(plotly)
 source("customTheme.R")
 
 # importar datos fuente gva
-datos <- read.csv("datos.csv")
+datos <- read.csv("./data/datos.csv")
 
 
 
