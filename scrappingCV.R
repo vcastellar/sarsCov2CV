@@ -4,8 +4,8 @@ library(zoo)
 library(data.table)
 
 # si el fichero que vamos a obtener ya existe, se borra
-if (file.exists("datos.csv")) {
-  file.remove("datos.csv")
+if (file.exists("datosRAW.csv")) {
+  file.remove("datosRAW.csv")
 }
 
 urls <- c("https://dadesobertes.gva.es/dataset/covid-19-dades-de-casos-i-persones-mortes-per-grup-edat-i-sexe-acumulades-des-del-31-01-2020",

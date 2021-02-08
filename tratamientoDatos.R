@@ -3,6 +3,9 @@
 #   - Se normalizan los valores de Edad y Sexo
 #   - Se calculan variaciones diarias de casos y defunciones
 #   - Se calcula la incidencia acumulada a 7 y 14 días para casos y defunciones
+if (file.exists("./data/datos.csv")) {
+  file.remove("./data/datos.csv")
+}
 datos <- read.csv("./data/datosRAW.csv", stringsAsFactors = FALSE)
 datos <- datos %>% arrange(fecha, Sexo, GrupoEdad) %>% 
   mutate(GrupoEdad = gsub("g90.*", "g90 o mas", GrupoEdad),
