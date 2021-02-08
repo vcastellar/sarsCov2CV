@@ -56,7 +56,7 @@ url <- urls[1]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAW.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",
@@ -110,7 +110,7 @@ url <- urls[2]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAW.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",
@@ -166,7 +166,7 @@ url <- urls[2]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAW.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",
