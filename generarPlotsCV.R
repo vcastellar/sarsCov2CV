@@ -70,7 +70,7 @@ datosTotales <- datos %>% group_by(fecha) %>%
 
 # grafico de casos
 p <- ggplot(datosTotales, aes(as.Date(fecha), CasosDia)) + 
-  geom_line(stat = "identity",
+  geom_bar(stat = "identity",
            color = palette$green) +
   labs(title = "nº casos diarios en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
