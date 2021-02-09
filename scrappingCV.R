@@ -4,14 +4,18 @@ library(zoo)
 library(data.table)
 
 # si el fichero que vamos a obtener ya existe, se borra
-if (file.exists("datosRAW.csv")) {
-  file.remove("datosRAW.csv")
+if (file.exists("datosRAWEdad.csv")) {
+  file.remove("datosRAWEdad.csv")
 }
 
 urls <- c("https://dadesobertes.gva.es/dataset/covid-19-dades-de-casos-i-persones-mortes-per-grup-edat-i-sexe-acumulades-des-del-31-01-2020",
           "https://dadesobertes.gva.es/va/dataset/covid19-casos-i-persones-mortes-per-grup-edat-i-sexe-2020")
 
-url <- urls[1]
+#------------------------------------------------------------------------------
+# extracción de datos por grupos de edad y sexo
+#------------------------------------------------------------------------------
+
+url <- "https://dadesobertes.gva.es/dataset/covid-19-dades-de-casos-i-persones-mortes-per-grup-edat-i-sexe-acumulades-des-del-31-01-2020"
   html <- read_html(url)
   
   links <- html %>%
@@ -56,7 +60,7 @@ url <- urls[1]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "./data/datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAWEdad.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",
@@ -67,7 +71,7 @@ url <- urls[1]
     
   }
 
-url <- urls[2]
+url <- "https://dadesobertes.gva.es/va/dataset/covid19-casos-i-persones-mortes-per-grup-edat-i-sexe-2020"
   html <- read_html(url)
   
   links <- html %>%
@@ -110,7 +114,7 @@ url <- urls[2]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "./data/datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAWEdad.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",
@@ -123,7 +127,7 @@ url <- urls[2]
   
   
   
-  url <- urls[2]
+  url <- "https://dadesobertes.gva.es/va/dataset/covid19-casos-i-persones-mortes-per-grup-edat-i-sexe-2020"
   html <- read_html(url)
   
   links <- html %>%
@@ -166,7 +170,7 @@ url <- urls[2]
         
         datosDia$fecha <- fecha
         names(datosDia) <- c("GrupoEdad", "Sexo", "PorcCasos", "CasosAcum", "PorcDef", "DefAcum", "fecha")
-        write.table(file = "./data/datosRAW.csv", datosDia, 
+        write.table(file = "./data/datosRAWEdad.csv", datosDia, 
                     row.names = FALSE, append = TRUE, 
                     col.names = ifelse(contador < 1, TRUE, FALSE),
                     sep = ",",

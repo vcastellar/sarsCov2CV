@@ -1,10 +1,12 @@
 # tratamiento de datos. 
 #------------------------------------------------------------------------------
+
+
 #   - Se normalizan los valores de Edad y Sexo
 #   - Se calculan variaciones diarias de casos y defunciones
 #   - Se calcula la incidencia acumulada a 7 y 14 días para casos y defunciones
-if (file.exists("./data/datos.csv")) {
-  file.remove("./data/datos.csv")
+if (file.exists("./data/datosEdad.csv")) {
+  file.remove("./data/datosEdad.csv")
 }
 datos <- read.csv("./data/datosRAW.csv", stringsAsFactors = FALSE)
 datos <- datos %>% arrange(fecha, Sexo, GrupoEdad) %>% 
@@ -30,30 +32,28 @@ obsTodas <- expand.grid(
 )
 # hacemos el merge entre el grid completo y las observaciones:
 
-datosCompletos <- merge(x = datos, 
+datosCompletosEdad <- merge(x = datos, 
                         y = obsTodas,
                         by = c("fecha", "GrupoEdad", "Sexo"), 
                         all.y = TRUE)
 # interpolamos CasosAcum y DefAcum
-datosCompletos <- datosCompletos %>% 
-  arrange(fecha, GrupoEdad, Sexo) %>% 
+datosCompletosEdad <- datosCompletosEdad %>% 
+  arrange(fecha) %>% 
   group_by(GrupoEdad, Sexo) %>% 
   mutate(CasosAcum = na.approx(CasosAcum, na.rm = FALSE),
          DefAcum   = na.approx(DefAcum,   na.rm = FALSE))
 
 # Se calculan el resto de las variables
-datosCompletos <- datosCompletos %>% 
+datosCompletosEdad <- datosCompletosEdad %>% 
   arrange(fecha, Sexo, GrupoEdad) %>%
   group_by(Sexo, GrupoEdad) %>% 
   mutate(CasosDia = c(0, diff(CasosAcum)),
          DefDia   = c(0, diff(DefAcum)),
          Casos_14d = rollapplyr(CasosDia, width = 14, FUN = sum, fill = 0),
-         Def_14d = rollapplyr(CasosDia, width = 14, FUN = sum, fill = 0),
+         Def_14d = rollapplyr(DefDia, width = 14, FUN = sum, fill = 0),
          Casos_7d = rollapplyr(CasosDia, width = 7, FUN = sum, fill = 0),
-         Def_7d = rollapplyr(CasosDia, width = 7, FUN = sum, fill = 0),
-         PoblacionCV = 5003769,
-         PorcCasos = NULL,
-         PorcDef   = NULL)
+         Def_7d = rollapplyr(DefDia, width = 7, FUN = sum, fill = 0),
+         PoblacionCV = 5003769)
 
 
-write.csv(datosCompletos, "./data/datos.csv", row.names = FALSE)
+write.csv(datosCompletosEdad, "./data/datosEdad.csv", row.names = FALSE)
