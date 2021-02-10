@@ -200,52 +200,21 @@ grid.arrange(p1, p2, p3, p6, p5, p4, ncol = 3, nrow = 2)
 dev.off()
 
 
-
-
-
-
-
-# cálculo del número de días necesarios para doblar la incidencia por grupos de edad:
-datosDoblaGrupoEdad <- datos %>% 
-  arrange(fecha, GrupoEdad) %>% 
-  group_by(fecha, GrupoEdad) %>%
-  summarise(CasosDia = sum(CasosDia)) %>% 
-  arrange(fecha) %>% 
-  group_by(GrupoEdad) %>% 
-  mutate(CasosDia_7d = rollapply(CasosDia, 
-                                 width = 7, 
-                                 FUN = mean, 
-                                 align = "right", 
-                                 partial = TRUE,
-                                 fill = NA),
-         alpha = rollapply(CasosDia_7d,
-                           width = 7, 
-                           FUN = function(x) 1 + (x[7] - x[1])/x[1],
-                           align = "right",
-                           partial = TRUE,
-                           fill = NA),
-         alpha_7d = rollapply(alpha,
-                              width = 14,
-                              FUN = mean, 
-                              align = "right", 
-                              partial = TRUE,
-                              fill = NA),
-         numDiasX2 = log(2) / log(alpha))
-
-p2 <- ggplot(datosDoblaGrupoEdad, aes(as.Date(fecha), alpha_7d, color = GrupoEdad)) + 
-  geom_line() +
-  facet_wrap(. ~ GrupoEdad) + 
-  labs(title = "nº de defunciones diarias en CV",
-       subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
-  xlab("Fecha") + ylab("Defunciones Diarias") +
-  scale_x_date(date_breaks = "1 month") +
-  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                       legend.position = "none",
-                       panel.grid.major.x = element_blank())
-
-
-
-
-
-
+# grñaficos de incidencias 14D por grupos de edad
+datosEdad <- merge(x = datosEdad, y = pobXGEdad, by = "GrupoEdad")
+datosEdad <- datosEdad %>% 
+  mutate(Inc_14d = Casos_14d / PobbEdad * 1e5)
+p3 <- ggplot(datosEdad, aes(as.Date(fecha),Inc_14d, color = GrupoEdad)) +
+  geom_bar(stat = "identity") +
+    facet_wrap(. ~ GrupoEdad) + 
+    labs(title = "Incidencia 14d x 100.000 habitantes por grupos de edad en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+    xlab("Fecha") + ylab("Incidencia 14d") +
+    scale_x_date(date_breaks = "1 month") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+png(filename = "./plots/Incidencia14DXGruposEdad.png", width = 1800, height = 900)
+p3
+dev.off()

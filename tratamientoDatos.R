@@ -8,7 +8,7 @@
 if (file.exists("./data/datosEdad.csv")) {
   file.remove("./data/datosEdad.csv")
 }
-datos <- read.csv("./data/datosRAW.csv", stringsAsFactors = FALSE)
+datos <- read.csv("./data/datosRAWEdad.csv", stringsAsFactors = FALSE)
 datos <- datos %>% arrange(fecha, Sexo, GrupoEdad) %>% 
   mutate(GrupoEdad = gsub("g90.*", "g90 o mas", GrupoEdad),
          Sexo = gsub("^.*Mujer.*$", "Mujer", Sexo),

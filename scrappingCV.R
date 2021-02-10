@@ -180,3 +180,9 @@ url <- "https://dadesobertes.gva.es/va/dataset/covid19-casos-i-persones-mortes-p
     },silent = TRUE)
     
   }
+
+  
+  pobXGEdad <- data.frame(GrupoEdad = c("g0-9","g10-19", "g20-29", "g30-39", "g40-49",
+                                           "g50-59", "g60-69", "g70-79", "g80-89", "g90 o mas"),
+                          PobbEdad  = c(460070,534393,508767,632014,841917,749547,579666,440802,230837,50634))
+                                         
