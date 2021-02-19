@@ -1,5 +1,8 @@
 # tratamiento de datos. 
 #------------------------------------------------------------------------------
+library(tidyr)
+library(dplyr)
+library(zoo)
 
 
 #   - Se normalizan los valores de Edad y Sexo
@@ -36,6 +39,7 @@ datosCompletosEdad <- merge(x = datos,
                         y = obsTodas,
                         by = c("fecha", "GrupoEdad", "Sexo"), 
                         all.y = TRUE)
+
 # interpolamos CasosAcum y DefAcum
 datosCompletosEdad <- datosCompletosEdad %>% 
   arrange(fecha) %>% 
@@ -53,7 +57,7 @@ datosCompletosEdad <- datosCompletosEdad %>%
          Def_14d = rollapplyr(DefDia, width = 14, FUN = sum, fill = 0),
          Casos_7d = rollapplyr(CasosDia, width = 7, FUN = sum, fill = 0),
          Def_7d = rollapplyr(DefDia, width = 7, FUN = sum, fill = 0),
-         PoblacionCV = 5003769)
+         PoblacionCV = 5067031)
 
 
 write.csv(datosCompletosEdad, "./data/datosEdad.csv", row.names = FALSE)

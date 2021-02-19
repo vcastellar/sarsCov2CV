@@ -7,6 +7,8 @@ library(plotly)
 
 source("customTheme.R")
 
+caption <- "Autor: @vi_castellar \n Fuente: Elaboración propia, Datos: https://dadesobertes.gva.es"
+
 # importar datos fuente gva
 datos <- read.csv("./data/datosEdad.csv", stringsAsFactors = FALSE)
 
@@ -28,9 +30,9 @@ datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>%
 # incidencia global por edad
 p <- ggplot(datosEdad, aes(as.Date(fecha), CasosDia, color = GrupoEdad)) + geom_bar(stat = "identity") +
   facet_wrap(. ~ GrupoEdad) + 
-  labs(title = "nº casos diarios por grupos de edad en CV",
+  labs(title = "nº casos PDIA+ por grupos de edad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Casos Diarios") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -46,9 +48,9 @@ p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) 
   geom_bar(stat = "identity") +
   geom_text(aes(label=CasosDia), position=position_dodge(width=0.9), vjust=-0.25) +
   facet_wrap(. ~ GrupoEdad) + 
-  labs(title = "nº casos diarios por grupos de edad en CV últimos 15 días",
+  labs(title = "nº casos PDIA+ diarios por grupos de edad en CV últimos 15 días",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Casos Diarios") +
   scale_x_date(date_breaks = "1 day") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -63,7 +65,7 @@ p <- ggplot(datosEdad, aes(as.Date(fecha), DefDia, color = GrupoEdad)) + geom_ba
   facet_wrap(. ~ GrupoEdad) + 
   labs(title = "nº defunciones diarias por grupos de edad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Casos Diarios") +
   ylab("Defunciones Diarias") +
   xlab("Fecha") +
@@ -83,7 +85,7 @@ p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) 
   facet_wrap(. ~ GrupoEdad) + 
   labs(title = "nº de defunciones por grupos de edad en CV últimos 15 días",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Casos Diarios") +
   scale_x_date(date_breaks = "1 day") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -111,9 +113,9 @@ datosTotales <- datos %>% group_by(fecha) %>%
 p1 <- ggplot(datosTotales, aes(as.Date(fecha), CasosDia)) + 
   geom_bar(stat = "identity",
            color = palette$green) +
-  labs(title = "nº casos diarios en CV",
+  labs(title = "nº casos PDIA+ diarios en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Casos Diarios") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -126,7 +128,7 @@ p2 <- ggplot(datosTotales, aes(as.Date(fecha), DefDia)) +
            color = palette$red) +
   labs(title = "nº de defunciones diarias en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("Defunciones Diarias") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -141,9 +143,9 @@ p2 <- ggplot(datosTotales, aes(as.Date(fecha), DefDia)) +
 p3 <- ggplot(datosTotales, aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) + 
   geom_bar(stat = "identity",
            color = palette$lightorange) +
-  labs(title = "tasa 14 días por cada 100.000 habitantes en CV",
+  labs(title = "tasa PDIA+ 14 días por cada 100.000 habitantes en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("nº casos x 100.000 habitantes") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -155,9 +157,9 @@ p3 <- ggplot(datosTotales, aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) +
 p4 <- ggplot(datosTotales, aes(as.Date(fecha), c(rep(NA, 7), diff(log(Casos_14d), lag = 7) + 1))) + 
   geom_line(stat = "identity",
            color = palette$gold) +
-  labs(title = "razón de tasas 14 días por cada 100.000 habitantes en CV",
+  labs(title = "razón de tasas PDIA+ 14 días por cada 100.000 habitantes en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("razón de tasas") +
   scale_x_date(date_breaks = "1 month") +
   geom_smooth(span = 0.25, color = palette$skyblue) +
@@ -173,7 +175,7 @@ p5 <- ggplot(datosTotales, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) +
               level = 0.95) +
   labs(title = "evolución del índice de fatalidad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("índice de fatalidad") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -185,9 +187,9 @@ p6 <- ggplot(datosTotales, aes(as.Date(fecha), CasosAcum)) +
   geom_line(stat = "identity",
               color = palette$green,
               size = 1.25) +
-  labs(title = "evolución del número de casos acumulados en CV",
+  labs(title = "evolución del número de casos PDIA+ acumulados en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
-       caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+       caption = caption) +
   xlab("Fecha") + ylab("número de casos") +
   scale_x_date(date_breaks = "1 month") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -207,9 +209,9 @@ datosEdad <- datosEdad %>%
 p3 <- ggplot(datosEdad, aes(as.Date(fecha),Inc_14d, color = GrupoEdad)) +
   geom_bar(stat = "identity") +
     facet_wrap(. ~ GrupoEdad) + 
-    labs(title = "Incidencia 14d x 100.000 habitantes por grupos de edad en CV",
+    labs(title = "Tasa PDIA+ 14d x 100.000 habitantes por grupos de edad en CV",
          subtitle = paste("fecha de generación: ", Sys.Date()),
-         caption = "Fuente de Datos: https://dadesobertes.gva.es") +
+         caption = caption) +
     xlab("Fecha") + ylab("Incidencia 14d") +
     scale_x_date(date_breaks = "1 month") +
     custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
@@ -217,4 +219,21 @@ p3 <- ggplot(datosEdad, aes(as.Date(fecha),Inc_14d, color = GrupoEdad)) +
                          panel.grid.major.x = element_blank())
 png(filename = "./plots/Incidencia14DXGruposEdad.png", width = 1800, height = 900)
 p3
+dev.off()
+
+
+# gráfico índice de fatalidad por grupos de edad
+p5 <- ggplot(datosEdad, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = GrupoEdad)) + 
+  #facet_wrap(.~GrupoEdad) +
+  geom_line(size = 1.2) +
+  labs(title = "evolución del índice de fatalidad en CV",
+       subtitle = paste("fecha de generación: ", Sys.Date()),
+       caption = caption) +
+  xlab("Fecha") + ylab("índice de fatalidad") +
+  scale_x_date(date_breaks = "1 month") +
+  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                       # legend.position = "none",
+                       panel.grid.major.x = element_blank())
+png(filename = "./plots/TasaFatalidadDXGruposEdad.png", width = 1800, height = 900)
+p5
 dev.off()
