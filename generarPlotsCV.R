@@ -23,7 +23,10 @@ datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>%
             Casos_7d  = sum(Casos_7d, na.rm = TRUE),
             Casos_14d = sum(Casos_14d, na.rm = TRUE),
             Def_7d    = sum(Def_7d, na.rm = TRUE),
-            Def_14d   = sum(Def_14d, na.rm = TRUE)
+            Def_14d   = sum(Def_14d, na.rm = TRUE),
+            TasaFat_14d = Def_14d / Casos_14d) %>% 
+  mutate(
+            Rat_7d = c(rep(0, 7), diff(log(Casos_7d), lag = 7) + 1)
             )
 
 
@@ -59,6 +62,8 @@ p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) 
 png(filename = "./plots/casosXGruposEdadUltimos15d.png", width = 1800, height = 900)
 p
 dev.off()
+
+
 
 # defunciones global por edad
 p <- ggplot(datosEdad, aes(as.Date(fecha), DefDia, color = GrupoEdad)) + geom_bar(stat = "identity") +
@@ -221,6 +226,42 @@ png(filename = "./plots/Incidencia14DXGruposEdad.png", width = 1800, height = 90
 p3
 dev.off()
 
+# grñaficos de incidencias 7D por grupos de edad
+datosEdad <- datosEdad %>% 
+  mutate(Inc_7d = Casos_7d / PobbEdad * 1e5,
+         )
+p3 <- ggplot(datosEdad, aes(as.Date(fecha),Inc_7d, color = GrupoEdad)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(. ~ GrupoEdad) + 
+  labs(title = "Tasa PDIA+ 7d x 100.000 habitantes por grupos de edad en CV",
+       subtitle = paste("fecha de generación: ", Sys.Date()),
+       caption = caption) +
+  xlab("Fecha") + ylab("Incidencia 7d") +
+  scale_x_date(date_breaks = "1 month") +
+  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                       legend.position = "none",
+                       panel.grid.major.x = element_blank())
+png(filename = "./plots/Incidencia7DXGruposEdad.png", width = 1800, height = 900)
+p3
+dev.off()
+
+# gráfico razón de tasas 7d grupos de edad
+p4 <- ggplot(datosEdad, aes(as.Date(fecha),  Rat_7d, color = GrupoEdad)) + 
+  geom_line() +
+  facet_wrap(. ~ GrupoEdad) + 
+  labs(title = "razón de tasas PDIA+ 7 días por cada 100.000 habitantes en CV x grupos de edad",
+       subtitle = paste("fecha de generación: ", Sys.Date()),
+       caption = caption) +
+  xlab("Fecha") + ylab("razón de tasas") +
+  scale_x_date(date_breaks = "1 month") +
+  geom_smooth(span = 0.25, color = palette$skyblue) +
+  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                       legend.position = "none",
+                       panel.grid.major.x = element_blank())
+png(filename = "./plots/RazonTasas7DXGruposEdad.png", width = 1800, height = 900)
+p4
+dev.off()
+
 
 # gráfico índice de fatalidad por grupos de edad
 p5 <- ggplot(datosEdad, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = GrupoEdad)) + 
@@ -237,3 +278,19 @@ p5 <- ggplot(datosEdad, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = G
 png(filename = "./plots/TasaFatalidadDXGruposEdad.png", width = 1800, height = 900)
 p5
 dev.off()
+
+# tasa de fatalidad últimos 14 días
+p5 <- datosEdad  %>% 
+  ggplot(., aes(as.Date(fecha), TasaFat_14d * 1e2, color = GrupoEdad)) + 
+  facet_wrap(. ~ GrupoEdad) +
+  #facet_wrap(.~GrupoEdad) +
+  geom_smooth() +
+  labs(title = "evolución de la tasa de fatalidad en CV",
+       subtitle = paste("fecha de generación: ", Sys.Date()),
+       caption = caption) +
+  xlab("Fecha") + ylab("% de fatalidad") +
+  scale_x_date(date_breaks = "1 month") +
+  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                       legend.position = "none",
+                       panel.grid.major.x = element_blank())
+
