@@ -279,18 +279,123 @@ png(filename = "./plots/TasaFatalidadDXGruposEdad.png", width = 1800, height = 9
 p5
 dev.off()
 
-# tasa de fatalidad últimos 14 días
-p5 <- datosEdad  %>% 
-  ggplot(., aes(as.Date(fecha), TasaFat_14d * 1e2, color = GrupoEdad)) + 
-  facet_wrap(. ~ GrupoEdad) +
-  #facet_wrap(.~GrupoEdad) +
-  geom_smooth() +
-  labs(title = "evolución de la tasa de fatalidad en CV",
+
+# casos totales últimos 15 días
+p <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+  ggplot(., aes(as.Date(fecha), CasosDia)) +
+  geom_bar(stat = "identity", fill = palette$orange) +
+  geom_text(aes(label=CasosDia), position=position_dodge(width=0.9), vjust=-0.25, color = palette$orange) +
+  labs(title = "nº casos PDIA+ diarios en CV últimos 15 días",
        subtitle = paste("fecha de generación: ", Sys.Date()),
        caption = caption) +
-  xlab("Fecha") + ylab("% de fatalidad") +
-  scale_x_date(date_breaks = "1 month") +
+  xlab("Fecha") + ylab("Casos Diarios") +
+  scale_x_date(date_breaks = "1 day") +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
+
+
+# resumen situación ultimos 28 días
+  # grafico de casos
+  p1 <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+    ggplot(., aes(as.Date(fecha), CasosDia)) + 
+    geom_bar(stat = "identity",
+             fill = palette$green) +
+    geom_text(aes(label=CasosDia), position=position_dodge(width=0.9), vjust=-0.25, color = palette$green) +
+    labs(title = "nº casos PDIA+ diarios en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("Casos Diarios") +
+    scale_x_date(date_breaks = "1 week") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  # grafico de defunciones
+  p2 <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+    ggplot(., aes(as.Date(fecha), DefDia)) + 
+    geom_bar(stat = "identity",
+             fill = palette$red) +
+    geom_text(aes(label=DefDia), position=position_dodge(width=0.9), vjust=-0.25, color = palette$red) +
+    
+    labs(title = "nº de defunciones diarias en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("Defunciones Diarias") +
+    scale_x_date(date_breaks = "1 week") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+  # gráfico de incidencia 14 días
+  p3 <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+    ggplot(., aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) + 
+    geom_bar(stat = "identity",
+             fill = palette$lightorange) +
+    geom_text(aes(label=round(Casos_14d / 5003769 * 1e5)), position=position_dodge(width=0.9), vjust=-0.25, color = palette$lightorange) +
+    
+    labs(title = "tasa PDIA+ 14 días por cada 100.000 habitantes en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("nº casos x 100.000 habitantes") +
+    scale_x_date(date_breaks = "1 week") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  
+  # gráfico razón de tasas
+  p4 <- ggplot(datosTotales, aes(as.Date(fecha), c(rep(NA, 7), diff(log(Casos_14d), lag = 7) + 1))) + 
+    geom_line(stat = "identity",
+              color = palette$gold) +
+    labs(title = "razón de tasas PDIA+ 14 días por cada 100.000 habitantes en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("razón de tasas") +
+    scale_x_date(date_breaks = "1 week") +
+    geom_smooth(span = 0.25, color = palette$skyblue) +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  
+  # gráfico índice de fatalidad
+  p5 <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+    ggplot(., aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) + 
+    geom_smooth(span = 10,
+                color = palette$red,
+                level = 0.95) +
+    labs(title = "evolución del índice de fatalidad en CV",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("índice de fatalidad") +
+    scale_x_date(date_breaks = "1 week") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  # gráfico casos acumulados
+  p6 <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) - 28) %>% 
+    ggplot(., aes(as.Date(fecha), Casos_7d / 7)) + 
+    geom_bar(stat = "identity",
+              fill = palette$lightyellow) +
+    geom_text(aes(label=round(Casos_7d / 7)), position=position_dodge(width=0.9), vjust=-0.25, color = palette$lightyellow) +
+    
+    labs(title = "evolución del número de casos PDIA+ acumulados en CV ult. 7 días",
+         subtitle = paste("fecha de generación: ", Sys.Date()),
+         caption = caption) +
+    xlab("Fecha") + ylab("número de casos") +
+    scale_x_date(date_breaks = "1 week") +
+    custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                         legend.position = "none",
+                         panel.grid.major.x = element_blank())
+  
+  
+  png(filename = "./plots/resumenSituacionUlt28d.png", width = 1800, height = 900)
+  grid.arrange(p1, p2, p3, p6, p5, p4, ncol = 3, nrow = 2)
+  dev.off()
 
