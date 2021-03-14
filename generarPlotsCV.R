@@ -385,7 +385,7 @@ p <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) 
               fill = palette$lightyellow) +
     geom_text(aes(label=round(Casos_7d / 7)), position=position_dodge(width=0.9), vjust=-0.25, color = palette$lightyellow) +
     
-    labs(title = "evolución del número de casos PDIA+ acumulados en CV ult. 7 días",
+    labs(title = "media díaria de casos PDIA+ acumulados en CV ult. 7 días",
          subtitle = paste("fecha de generación: ", Sys.Date()),
          caption = caption) +
     xlab("Fecha") + ylab("número de casos") +

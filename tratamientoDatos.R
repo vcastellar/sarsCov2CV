@@ -44,8 +44,8 @@ datosCompletosEdad <- merge(x = datos,
 datosCompletosEdad <- datosCompletosEdad %>% 
   arrange(fecha) %>% 
   group_by(GrupoEdad, Sexo) %>% 
-  mutate(CasosAcum = na.approx(CasosAcum, na.rm = FALSE),
-         DefAcum   = na.approx(DefAcum,   na.rm = FALSE))
+  mutate(CasosAcum = na.locf(CasosAcum, na.rm = FALSE),
+         DefAcum   = na.locf(DefAcum,   na.rm = FALSE))
 
 # Se calculan el resto de las variables
 datosCompletosEdad <- datosCompletosEdad %>% 
