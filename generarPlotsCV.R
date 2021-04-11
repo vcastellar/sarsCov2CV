@@ -265,7 +265,7 @@ dev.off()
 
 # gráfico índice de fatalidad por grupos de edad
 p5 <- ggplot(datosEdad, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = GrupoEdad)) + 
-  #facet_wrap(.~GrupoEdad) +
+  facet_wrap(.~GrupoEdad, scales = "free") +
   geom_line(size = 1.2) +
   labs(title = "evolución del índice de fatalidad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
