@@ -14,7 +14,7 @@ datos <- read.csv("./data/datosEdad.csv", stringsAsFactors = FALSE)
 
 
 
-# datos por grupo de edad
+# datos por grupo de edad2
 datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>% 
   summarise(CasosAcum = sum(CasosAcum, na.rm = TRUE),
             CasosDia  = sum(CasosDia, na.rm = TRUE),
