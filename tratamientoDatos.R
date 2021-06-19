@@ -3,6 +3,7 @@
 library(tidyr)
 library(dplyr)
 library(zoo)
+library(lubridate)
 
 
 #   - Se normalizan los valores de Edad y Sexo
@@ -12,11 +13,14 @@ if (file.exists("./data/datosEdad.csv")) {
   file.remove("./data/datosEdad.csv")
 }
 datos <- read.csv("./data/datosRAWEdad.csv", stringsAsFactors = FALSE)
+datos$fecha <- ymd(datos$fecha)
 datos <- datos %>% arrange(fecha, Sexo, GrupoEdad) %>% 
   mutate(GrupoEdad = gsub("g90.*", "g90 o mas", GrupoEdad),
          Sexo = gsub("^.*Mujer.*$", "Mujer", Sexo),
          Sexo = gsub("^.*Hombre.*$", "Hombre", Sexo))
+datos <- datos[complete.cases(datos), ]
 
+datos <- datos %>% distinct(GrupoEdad, Sexo, fecha, .keep_all = TRUE)
 # en algunos casos, la fuente no proporciona información para determinadas fechas
 # (enlace roto). En estos casos, se interpola la serie de casos acumulados
 # y defunciones acumuladas para completar las fechas ausentes.
