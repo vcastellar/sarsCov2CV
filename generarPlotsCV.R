@@ -25,8 +25,11 @@ datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>%
             Def_7d    = sum(Def_7d, na.rm = TRUE),
             Def_14d   = sum(Def_14d, na.rm = TRUE),
             TasaFat_14d = Def_14d / Casos_14d) %>% 
+  arrange(GrupoEdad, fecha)
+
+datosEdad <- datosEdad %>% group_by(GrupoEdad) %>% 
   mutate(
-            Rat_7d = c(rep(0, 7), diff(log(Casos_7d), lag = 7) + 1)
+            Rat_7d = c( (Casos_7d - lag(Casos_7d, n = 7)) / lag(Casos_7d, n = 7))
             )
 
 
@@ -246,7 +249,8 @@ p3
 dev.off()
 
 # gráfico razón de tasas 7d grupos de edad
-p4 <- ggplot(datosEdad, aes(as.Date(fecha),  Rat_7d, color = GrupoEdad)) + 
+p4 <- datosEdad %>% filter(fecha >= '2020-07-01' & abs(Rat_7d) < 3) %>%
+  ggplot(., aes(as.Date(fecha),  Rat_7d, color = GrupoEdad)) + 
   geom_line() +
   facet_wrap(. ~ GrupoEdad) + 
   labs(title = "razón de tasas PDIA+ 7 días por cada 100.000 habitantes en CV x grupos de edad",
@@ -264,7 +268,8 @@ dev.off()
 
 
 # gráfico índice de fatalidad por grupos de edad
-p5 <- ggplot(datosEdad, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = GrupoEdad)) + 
+p5 <- datosEdad %>% filter(fecha >= '2020-06-01') %>% 
+  ggplot(., aes(as.Date(fecha), DefAcum / CasosAcum * 1e2, color = GrupoEdad)) + 
   facet_wrap(.~GrupoEdad, scales = "free") +
   geom_line(size = 1.2) +
   labs(title = "evolución del índice de fatalidad en CV",
