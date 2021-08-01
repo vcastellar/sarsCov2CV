@@ -11,10 +11,11 @@ caption <- "Autor: @vi_castellar \n Fuente: Elaboración propia, Datos: https://
 
 # importar datos fuente gva
 datos <- read.csv("./data/datosEdad.csv", stringsAsFactors = FALSE)
+load("./data/pobXGEdad.RData")
 
 
 
-# datos por grupo de edad2
+# datos por grupo de edad
 datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>% 
   summarise(CasosAcum = sum(CasosAcum, na.rm = TRUE),
             CasosDia  = sum(CasosDia, na.rm = TRUE),
@@ -29,12 +30,14 @@ datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>%
 
 datosEdad <- datosEdad %>% group_by(GrupoEdad) %>% 
   mutate(
-            Rat_7d = c( (Casos_7d - lag(Casos_7d, n = 7)) / lag(Casos_7d, n = 7))
+            Rat_7d = c( (Casos_14d - lag(Casos_14d, n = 7)) / lag(Casos_14d, n = 7))
             )
 
-
-# incidencia global por edad
-p <- ggplot(datosEdad, aes(as.Date(fecha), CasosDia, color = GrupoEdad)) + geom_bar(stat = "identity") +
+#------------------------------------------------------------------------------
+# incidencia casos por grupos de edad
+#------------------------------------------------------------------------------
+p_globalEdadInc <- ggplot(datosEdad, aes(as.Date(fecha), CasosDia, color = GrupoEdad)) + 
+  geom_bar(stat = "identity") +
   facet_wrap(. ~ GrupoEdad) + 
   labs(title = "nº casos PDIA+ por grupos de edad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
@@ -45,11 +48,15 @@ p <- ggplot(datosEdad, aes(as.Date(fecha), CasosDia, color = GrupoEdad)) + geom_
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 png(filename = "./plots/casosXGruposEdad.png", width = 1800, height = 900)
-p
+  p_globalEdadInc
 dev.off()
+#------------------------------------------------------------------------------
 
-# incidencia últimos 15 días
-p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) %>% 
+
+#------------------------------------------------------------------------------
+# incidencia últimos 15 días por grupos de edad
+#------------------------------------------------------------------------------
+p_ult15EdadInc <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) %>% 
   ggplot(., aes(as.Date(fecha), CasosDia, color = GrupoEdad, fill = GrupoEdad)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label=CasosDia), position=position_dodge(width=0.9), vjust=-0.25) +
@@ -63,13 +70,16 @@ p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) 
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 png(filename = "./plots/casosXGruposEdadUltimos15d.png", width = 1800, height = 900)
-p
+  p_ult15EdadInc
 dev.off()
+#------------------------------------------------------------------------------
 
 
-
+#------------------------------------------------------------------------------
 # defunciones global por edad
-p <- ggplot(datosEdad, aes(as.Date(fecha), DefDia, color = GrupoEdad)) + geom_bar(stat = "identity") +
+#------------------------------------------------------------------------------
+p_globalEdadDef <- ggplot(datosEdad, aes(as.Date(fecha), DefDia, color = GrupoEdad)) +
+  geom_bar(stat = "identity") +
   facet_wrap(. ~ GrupoEdad) + 
   labs(title = "nº defunciones diarias por grupos de edad en CV",
        subtitle = paste("fecha de generación: ", Sys.Date()),
@@ -82,11 +92,15 @@ p <- ggplot(datosEdad, aes(as.Date(fecha), DefDia, color = GrupoEdad)) + geom_ba
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 png(filename = "./plots/defuncionesXGruposEdad.png", width = 1800, height = 900)
-p
+  p_globalEdadDef
 dev.off()
+#------------------------------------------------------------------------------
 
+
+#------------------------------------------------------------------------------
 # defunciones últimos 15 días
-p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) %>% 
+#------------------------------------------------------------------------------
+p_ult15EdadDef <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) %>% 
   ggplot(., aes(as.Date(fecha), DefDia, color = GrupoEdad, fill = GrupoEdad)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label=DefDia), position=position_dodge(width=0.9), vjust=-0.25) +
@@ -100,8 +114,10 @@ p <- datosEdad %>% filter(as.Date(fecha) >= as.Date(max(datosEdad$fecha)) - 14) 
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 png(filename = "./plots/defuncionesXGruposEdadUltimos15d.png", width = 1800, height = 900)
-p
+  p_ult15EdadDef
 dev.off()
+#------------------------------------------------------------------------------
+
 
 #------------------------------------------------------------------------------
 # datos de incidencia y defunciones totales
@@ -117,8 +133,12 @@ datosTotales <- datos %>% group_by(fecha) %>%
             Def_14d   = sum(Def_14d)
   )
 
-# grafico de casos
-p1 <- ggplot(datosTotales, aes(as.Date(fecha), CasosDia)) + 
+
+#------------------------------------------------------------------------------
+# Resumen situación
+#------------------------------------------------------------------------------
+# gráfico de casos
+p_casosTot <- ggplot(datosTotales, aes(as.Date(fecha), CasosDia)) + 
   geom_bar(stat = "identity",
            color = palette$green) +
   labs(title = "nº casos PDIA+ diarios en CV",
@@ -130,8 +150,8 @@ p1 <- ggplot(datosTotales, aes(as.Date(fecha), CasosDia)) +
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 
-# grafico de defunciones
-p2 <- ggplot(datosTotales, aes(as.Date(fecha), DefDia)) + 
+# gráfico de defunciones
+p_defTot <- ggplot(datosTotales, aes(as.Date(fecha), DefDia)) + 
   geom_bar(stat = "identity",
            color = palette$red) +
   labs(title = "nº de defunciones diarias en CV",
@@ -144,11 +164,8 @@ p2 <- ggplot(datosTotales, aes(as.Date(fecha), DefDia)) +
                        panel.grid.major.x = element_blank())
 
 
-
-
-
 # gráfico de incidencia 14 días
-p3 <- ggplot(datosTotales, aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) + 
+p_incTot <- ggplot(datosTotales, aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) + 
   geom_bar(stat = "identity",
            color = palette$lightorange) +
   labs(title = "tasa PDIA+ 14 días por cada 100.000 habitantes en CV",
@@ -162,7 +179,7 @@ p3 <- ggplot(datosTotales, aes(as.Date(fecha), Casos_14d / 5003769 * 1e5)) +
 
 
 # gráfico razón de tasas
-p4 <- ggplot(datosTotales, aes(as.Date(fecha), c(rep(NA, 7), diff(log(Casos_14d), lag = 7) + 1))) + 
+p_razonTot <- ggplot(datosTotales, aes(as.Date(fecha), c(rep(NA, 7), diff(log(Casos_14d), lag = 7) + 1))) + 
   geom_line(stat = "identity",
            color = palette$gold) +
   labs(title = "razón de tasas PDIA+ 14 días por cada 100.000 habitantes en CV",
@@ -177,8 +194,8 @@ p4 <- ggplot(datosTotales, aes(as.Date(fecha), c(rep(NA, 7), diff(log(Casos_14d)
 
 
 # gráfico índice de fatalidad
-p5 <- ggplot(datosTotales, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) + 
-  geom_smooth(span = 10,
+p_indFatTot <- ggplot(datosTotales, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) + 
+  geom_smooth(span = 0.01,
               color = palette$red,
               level = 0.95) +
   labs(title = "evolución del índice de fatalidad en CV",
@@ -186,12 +203,13 @@ p5 <- ggplot(datosTotales, aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) +
        caption = caption) +
   xlab("Fecha") + ylab("índice de fatalidad") +
   scale_x_date(date_breaks = "1 month") +
+  ylim(0, 15) +
   custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
                        legend.position = "none",
                        panel.grid.major.x = element_blank())
 
 # gráfico casos acumulados
-p6 <- ggplot(datosTotales, aes(as.Date(fecha), CasosAcum)) + 
+p_casosAcumTot <- ggplot(datosTotales, aes(as.Date(fecha), CasosAcum)) + 
   geom_line(stat = "identity",
               color = palette$green,
               size = 1.25) +
@@ -206,11 +224,14 @@ p6 <- ggplot(datosTotales, aes(as.Date(fecha), CasosAcum)) +
 
 
 png(filename = "./plots/resumenSituacion.png", width = 1800, height = 900)
-grid.arrange(p1, p2, p3, p6, p5, p4, ncol = 3, nrow = 2)
+  grid.arrange(p_casosTot, p_defTot, p_incTot, 
+               p_casosAcumTot, p_indFatTot, p_razonTot, 
+               ncol = 3, nrow = 2)
 dev.off()
+#------------------------------------------------------------------------------
 
 
-# grñaficos de incidencias 14D por grupos de edad
+# gráficos de incidencias 14D por grupos de edad
 datosEdad <- merge(x = datosEdad, y = pobXGEdad, by = "GrupoEdad")
 datosEdad <- datosEdad %>% 
   mutate(Inc_14d = Casos_14d / PobbEdad * 1e5)
@@ -373,7 +394,7 @@ p <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) 
     ggplot(., aes(as.Date(fecha), DefAcum / CasosAcum * 1e2)) + 
     geom_smooth(span = 10,
                 color = palette$red,
-                level = 0.95) +
+                level = 0.001) +
     labs(title = "evolución del índice de fatalidad en CV",
          subtitle = paste("fecha de generación: ", Sys.Date()),
          caption = caption) +
