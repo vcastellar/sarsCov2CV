@@ -424,4 +424,26 @@ p <- datosTotales %>% filter(as.Date(fecha) >= as.Date(max(datosTotales$fecha)) 
   png(filename = "./plots/resumenSituacionUlt28d.png", width = 1800, height = 900)
   grid.arrange(p1, p2, p3, p6, p5, p4, ncol = 3, nrow = 2)
   dev.off()
+  
+  #----------------------------------------------------------------------------
+  
+# gráfico índice de fatalidad  instantaneo por grupos de edad
+p_indFatInstxGEdad <- datosEdad %>% filter(fecha >= '2020-06-01') %>% 
+  ggplot(., aes(as.Date(fecha), Def_14d / Casos_14d * 1e2, color = GrupoEdad)) + 
+  facet_wrap(.~GrupoEdad, scales = "free") +
+  geom_smooth(data = datosEdad %>% group_by(GrupoEdad),span = 0.1) +
+  # geom_line(size = 1.2) +
+  labs(title = "evolución del índice de fatalidad instantaneo en CV",
+       subtitle = paste("fecha de generación: ", Sys.Date()),
+       caption = caption) +
+  xlab("Fecha") + ylab("índice de fatalidad") +
+  scale_x_date(date_breaks = "1 month") +
+  custom_theme + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                       # legend.position = "none",
+                       panel.grid.major.x = element_blank())
+png(filename = "./plots/TasaFatalidadInstantaneaXGruposEdad.png", width = 1800, height = 900)
+  p_indFatInstxGEdad
+dev.off()
+  
+  
 
