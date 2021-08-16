@@ -29,7 +29,7 @@ datosEdad <- datos %>% group_by(fecha, GrupoEdad) %>%
 
 datosEdad <- datosEdad %>% group_by(GrupoEdad) %>% 
   mutate(
-            Rat_7d = c( (Casos_7d - lag(Casos_7d, n = 7)) / lag(Casos_7d, n = 7))
+            Rat_7d = c( (Casos_14d - lag(Casos_14d, n = 7)) / lag(Casos_14d, n = 7) + 1)
             )
 
 
